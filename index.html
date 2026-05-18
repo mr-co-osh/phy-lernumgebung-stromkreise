@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physik – Der elektrische Stromkreis</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --surface: #171b26;
+  --card: #1e2333;
+  --card2: #242840;
+  --accent: #4f9cf9;
+  --accent2: #f9a84f;
+  --accent3: #4ff9b8;
+  --danger: #f94f6a;
+  --text: #e8eaf6;
+  --muted: #7b82a0;
+  --border: #2e3450;
+  --success: #4ff9b8;
+  --error: #f94f6a;
+  --highlight: #f9de4f;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* GRID BACKGROUND */
+body::before {
+  content:'';position:fixed;inset:0;
+  background-image: linear-gradient(rgba(79,156,249,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79,156,249,.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events:none;z-index:0;
+}
+
+/* HEADER */
+header {
+  background: linear-gradient(135deg, #0d1420 0%, #111827 50%, #0d1f35 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 2.5rem 2rem 2rem;
+  position: relative; overflow: hidden;
+}
+header::before {
+  content:'';position:absolute;top:-100px;right:-100px;
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle, rgba(79,156,249,.12) 0%, transparent 70%);
+}
+header::after {
+  content:'⚡';position:absolute;right:2rem;top:50%;transform:translateY(-50%);
+  font-size:5rem;opacity:.08;
+}
+.header-inner{max-width:960px;margin:0 auto;position:relative;z-index:1;}
+.header-tag {
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(79,156,249,.12);border:1px solid rgba(79,156,249,.3);
+  border-radius:20px;padding:.3rem 1rem;font-size:.75rem;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--accent);
+  margin-bottom:1rem;font-family:'Space Mono',monospace;
+}
+header h1 {
+  font-size:clamp(1.8rem,4.5vw,3rem);font-weight:800;line-height:1.1;
+  background:linear-gradient(135deg,#fff 0%,var(--accent) 60%,var(--accent3) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:.5rem;
+}
+header p{color:var(--muted);font-size:.95rem;font-weight:300;}
+
+/* NAV */
+nav{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.nav-inner{max-width:960px;margin:0 auto;display:flex;overflow-x:auto;}
+.nav-btn{
+  background:none;border:none;cursor:pointer;padding:.9rem 1.1rem;
+  font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:500;
+  color:var(--muted);white-space:nowrap;border-bottom:2px solid transparent;
+  transition:all .2s;
+}
+.nav-btn:hover{color:var(--accent);}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+/* MAIN */
+main{max-width:960px;margin:0 auto;padding:2rem 1rem 4rem;position:relative;z-index:1;}
+.section{display:none;animation:fadeIn .35s ease;}
+.section.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* SECTION HEADER */
+.section-header{margin-bottom:1.5rem;}
+.section-header h2{
+  font-size:1.8rem;font-weight:800;
+  background:linear-gradient(90deg,#fff,var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:.3rem;
+}
+.section-header p{color:var(--muted);font-size:.9rem;}
+
+/* CARDS */
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:1.6rem;margin-bottom:1.4rem;
+  box-shadow:0 4px 24px rgba(0,0,0,.25);
+}
+.card-title{
+  font-size:1.1rem;font-weight:700;margin-bottom:1rem;
+  display:flex;align-items:center;gap:.6rem;color:var(--accent);
+}
+.card-title .icon{font-size:1.1rem;}
+
+/* FORMULA BOX */
+.formula-box {
+  background:var(--card2);border:1px solid var(--accent);border-radius:10px;
+  padding:1rem 1.4rem;margin:.8rem 0;text-align:center;
+  font-family:'Space Mono',monospace;font-size:1.1rem;color:var(--accent3);
+}
+.formula-big {
+  font-size:1.6rem;font-weight:700;display:block;margin-bottom:.3rem;
+}
+.formula-sub{font-size:.78rem;color:var(--muted);}
+
+/* TABLE */
+.phy-table{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:.8rem;}
+.phy-table th{
+  background:rgba(79,156,249,.15);color:var(--accent);
+  padding:.65rem 1rem;text-align:left;font-weight:600;
+  border-bottom:2px solid var(--accent);
+}
+.phy-table td{padding:.65rem 1rem;border-bottom:1px solid var(--border);}
+.phy-table tr:hover td{background:rgba(79,156,249,.05);}
+.mono{font-family:'Space Mono',monospace;color:var(--accent3);}
+
+/* INFO GRID */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin-top:.8rem;}
+.info-box{border-radius:10px;padding:1.1rem 1.3rem;border-left:3px solid;}
+.info-box.blue{background:rgba(79,156,249,.08);border-color:var(--accent);}
+.info-box.green{background:rgba(79,249,184,.08);border-color:var(--accent3);}
+.info-box.orange{background:rgba(249,168,79,.08);border-color:var(--accent2);}
+.info-box.red{background:rgba(249,79,106,.08);border-color:var(--danger);}
+.info-box h4{font-size:.9rem;font-weight:600;margin-bottom:.5rem;}
+.info-box p,.info-box li{font-size:.84rem;color:#b0b8d8;line-height:1.6;}
+.info-box ul{padding-left:1.1rem;}
+
+/* ACCORDION */
+.accordion{margin-bottom:.6rem;}
+.acc-header{
+  width:100%;background:var(--card2);border:1px solid var(--border);border-radius:8px;
+  padding:.9rem 1.1rem;text-align:left;cursor:pointer;
+  font-family:'Outfit',sans-serif;font-size:.92rem;font-weight:500;color:var(--text);
+  display:flex;justify-content:space-between;align-items:center;transition:all .2s;
+}
+.acc-header:hover{border-color:var(--accent);color:var(--accent);}
+.acc-header.open{border-color:var(--accent);background:rgba(79,156,249,.08);color:var(--accent);border-radius:8px 8px 0 0;}
+.acc-chevron{transition:transform .3s;color:var(--muted);}
+.acc-header.open .acc-chevron{transform:rotate(180deg);}
+.acc-body{
+  background:rgba(79,156,249,.04);border:1px solid var(--accent);
+  border-top:none;border-radius:0 0 8px 8px;
+  padding:1.1rem 1.2rem;font-size:.86rem;line-height:1.7;color:#b0b8d8;display:none;
+}
+.acc-body.open{display:block;animation:fadeIn .2s ease;}
+
+/* CHECKLIST */
+.checklist-item {
+  display:flex;gap:1rem;align-items:flex-start;
+  padding:1rem 1.1rem;border-radius:10px;border:1px solid var(--border);
+  background:var(--card2);margin-bottom:.6rem;cursor:pointer;
+  transition:all .2s;
+}
+.checklist-item:hover{border-color:var(--accent);}
+.checklist-item.done{border-color:var(--accent3);background:rgba(79,249,184,.05);}
+.checklist-item.practice{border-color:var(--accent2);background:rgba(249,168,79,.05);}
+.checklist-item.must-practice{border-color:var(--danger);background:rgba(249,79,106,.05);}
+.cl-toggle {
+  width:28px;height:28px;border-radius:50%;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-size:.85rem;transition:all .2s;cursor:pointer;
+}
+.checklist-item.done .cl-toggle{background:var(--accent3);border-color:var(--accent3);color:#0a1a12;}
+.checklist-item.practice .cl-toggle{background:var(--accent2);border-color:var(--accent2);color:#1a0e00;}
+.checklist-item.must-practice .cl-toggle{background:var(--danger);border-color:var(--danger);color:white;}
+.cl-content{flex:1;}
+.cl-number{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--muted);margin-bottom:.2rem;}
+.cl-text{font-size:.88rem;line-height:1.5;}
+.cl-explanation{
+  margin-top:.7rem;padding:.8rem;background:var(--card);border-radius:8px;
+  font-size:.83rem;color:#b0b8d8;line-height:1.6;display:none;
+  border-left:3px solid var(--accent);
+}
+.cl-explanation.show{display:block;animation:fadeIn .2s ease;}
+.cl-badge{
+  display:inline-block;padding:.15rem .6rem;border-radius:10px;
+  font-size:.7rem;font-weight:600;letter-spacing:.05em;margin-left:.5rem;
+}
+.cl-badge.ekurs{background:rgba(79,156,249,.2);color:var(--accent);}
+.cl-status-bar{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;}
+.cl-status-btn{
+  background:var(--card2);border:1px solid var(--border);border-radius:6px;
+  padding:.4rem .9rem;font-size:.78rem;cursor:pointer;font-family:'Outfit',sans-serif;
+  transition:all .2s;color:var(--muted);
+}
+.cl-status-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* DANGER ITEMS */
+.danger-rule {
+  display:flex;gap:.8rem;align-items:flex-start;
+  padding:.8rem 1rem;border-radius:8px;
+  background:rgba(249,79,106,.07);border-left:3px solid var(--danger);
+  margin-bottom:.5rem;font-size:.88rem;color:#e8a0a8;line-height:1.5;
+}
+.danger-icon{font-size:1.1rem;flex-shrink:0;}
+
+/* QUIZ */
+.quiz-progress{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;}
+.progress-bar{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent3));border-radius:3px;transition:width .5s;}
+.progress-label{font-family:'Space Mono',monospace;font-size:.78rem;color:var(--muted);white-space:nowrap;}
+.q-topic{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem;}
+.q-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:30px;height:30px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent3));
+  font-size:.8rem;font-weight:700;color:#0a1a2e;margin-bottom:.8rem;
+}
+.q-text{font-size:1rem;font-weight:500;margin-bottom:1.2rem;line-height:1.55;color:var(--text);}
+.options{display:flex;flex-direction:column;gap:.55rem;}
+.opt-btn{
+  background:var(--card2);border:1px solid var(--border);border-radius:8px;
+  padding:.8rem 1.1rem;text-align:left;cursor:pointer;
+  font-family:'Outfit',sans-serif;font-size:.9rem;color:var(--text);
+  transition:all .18s;display:flex;align-items:center;gap:.7rem;
+}
+.opt-btn:hover:not(:disabled){border-color:var(--accent);background:rgba(79,156,249,.08);transform:translateX(3px);}
+.opt-btn.correct{border-color:var(--accent3);background:rgba(79,249,184,.1);color:var(--accent3);}
+.opt-btn.wrong{border-color:var(--danger);background:rgba(249,79,106,.1);color:var(--danger);}
+.opt-btn:disabled{cursor:default;}
+.opt-letter{
+  width:24px;height:24px;border-radius:50%;background:var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;font-weight:700;flex-shrink:0;font-family:'Space Mono',monospace;
+}
+.opt-btn.correct .opt-letter{background:var(--accent3);color:#0a1a12;}
+.opt-btn.wrong .opt-letter{background:var(--danger);color:white;}
+.multi-opt{
+  background:var(--card2);border:1px solid var(--border);border-radius:8px;
+  padding:.8rem 1.1rem;cursor:pointer;font-size:.9rem;color:var(--text);
+  transition:all .18s;display:flex;align-items:center;gap:.8rem;
+}
+.multi-opt:hover:not(.locked){border-color:var(--accent);background:rgba(79,156,249,.08);}
+.multi-opt.selected{border-color:var(--accent);background:rgba(79,156,249,.1);}
+.multi-opt.correct-selected{border-color:var(--accent3);background:rgba(79,249,184,.1);color:var(--accent3);}
+.multi-opt.wrong-selected{border-color:var(--danger);background:rgba(249,79,106,.1);color:var(--danger);}
+.multi-opt.missed-correct{border-color:var(--accent3);background:rgba(79,249,184,.06);opacity:.6;}
+.multi-opt.locked{cursor:default;}
+.m-check{
+  width:18px;height:18px;border-radius:3px;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.multi-opt.selected .m-check,.multi-opt.correct-selected .m-check{background:var(--accent);border-color:var(--accent);color:white;font-size:.7rem;}
+.multi-opt.wrong-selected .m-check{background:var(--danger);border-color:var(--danger);color:white;font-size:.7rem;}
+.submit-btn{
+  margin-top:.9rem;background:linear-gradient(135deg,var(--accent),var(--accent3));
+  color:#0a1a2e;border:none;border-radius:8px;padding:.7rem 1.6rem;
+  font-family:'Outfit',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:all .2s;
+}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(79,156,249,.3);}
+.submit-btn:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none;}
+.feedback{
+  margin-top:.9rem;padding:.9rem 1.1rem;border-radius:8px;
+  font-size:.88rem;line-height:1.6;display:none;
+}
+.feedback.show{display:block;animation:fadeIn .3s ease;}
+.feedback.ok{background:rgba(79,249,184,.1);border-left:3px solid var(--accent3);color:#a0f0d0;}
+.feedback.err{background:rgba(249,79,106,.1);border-left:3px solid var(--danger);color:#f0a0a8;}
+.btn-next{
+  background:linear-gradient(135deg,var(--accent),#3a7fd4);color:white;
+  border:none;border-radius:8px;padding:.8rem 1.8rem;
+  font-family:'Outfit',sans-serif;font-size:.92rem;font-weight:600;
+  cursor:pointer;transition:all .2s;display:none;margin-top:1rem;
+}
+.btn-next:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(79,156,249,.35);}
+.btn-next.show{display:inline-block;}
+
+/* RESULTS */
+.result-wrap{text-align:center;padding:2.5rem 1rem;}
+.score-circle{
+  width:150px;height:150px;border-radius:50%;margin:0 auto 1.5rem;
+  position:relative;display:flex;align-items:center;justify-content:center;flex-direction:column;
+}
+.score-bg{position:absolute;inset:0;border-radius:50%;}
+.score-inner{
+  position:absolute;inset:10px;border-radius:50%;background:var(--card);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+}
+.score-num{font-family:'Space Mono',monospace;font-size:2.5rem;font-weight:700;color:var(--accent3);line-height:1;}
+.score-of{font-size:.7rem;color:var(--muted);}
+.result-title{font-size:1.8rem;font-weight:800;margin-bottom:.4rem;}
+.result-sub{color:var(--muted);margin-bottom:2rem;}
+.topic-row{display:flex;align-items:center;gap:.8rem;padding:.75rem .9rem;border-radius:8px;margin-bottom:.5rem;background:var(--card2);border:1px solid var(--border);}
+.topic-name{flex:1;font-size:.85rem;font-weight:500;}
+.topic-bar-wrap{flex:2;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.topic-bar-fill{height:100%;border-radius:3px;}
+.topic-pct{font-family:'Space Mono',monospace;font-size:.75rem;width:36px;text-align:right;}
+.review-item{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:.7rem;text-align:left;}
+.review-q{font-weight:600;font-size:.87rem;margin-bottom:.4rem;}
+.review-yours{font-size:.82rem;color:var(--danger);margin-bottom:.3rem;}
+.review-right{font-size:.82rem;color:var(--accent3);margin-bottom:.4rem;}
+.review-exp{font-size:.8rem;color:var(--muted);background:rgba(79,156,249,.06);padding:.5rem .7rem;border-radius:6px;}
+.btn-retry{
+  background:var(--accent2);color:#1a0e00;border:none;border-radius:10px;
+  padding:.9rem 2.2rem;font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:700;
+  cursor:pointer;transition:all .2s;margin:.5rem;
+}
+.btn-retry:hover{transform:translateY(-2px);}
+.btn-back{
+  background:transparent;color:var(--accent);border:1px solid var(--accent);
+  border-radius:10px;padding:.9rem 2rem;font-family:'Outfit',sans-serif;
+  font-size:.95rem;font-weight:600;cursor:pointer;transition:all .2s;margin:.5rem;
+}
+.btn-back:hover{background:rgba(79,156,249,.1);}
+
+/* FLASHCARDS */
+.fc-deck-sel{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.3rem;}
+.fc-deck-btn{
+  background:var(--card2);border:1px solid var(--border);border-radius:16px;
+  padding:.35rem 1rem;cursor:pointer;font-size:.82rem;font-weight:500;
+  font-family:'Outfit',sans-serif;transition:all .18s;color:var(--muted);
+}
+.fc-deck-btn.active{background:rgba(79,156,249,.15);border-color:var(--accent);color:var(--accent);}
+.fc-hint{text-align:center;font-size:.78rem;color:var(--muted);margin-bottom:.7rem;font-family:'Space Mono',monospace;}
+.fc-wrap{perspective:1000px;cursor:pointer;margin-bottom:1rem;}
+.fc-card{
+  min-height:210px;position:relative;transform-style:preserve-3d;
+  transition:transform .5s ease;border-radius:12px;
+}
+.fc-card.flipped{transform:rotateY(180deg);}
+.fc-front,.fc-back{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:12px;padding:2rem;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+}
+.fc-front{
+  background:linear-gradient(135deg,#0d1f3a 0%,#0d2640 50%,#0a1f35 100%);
+  border:1px solid var(--accent);
+}
+.fc-back{
+  background:var(--card2);border:1px solid var(--accent3);
+  transform:rotateY(180deg);
+}
+.fc-topic-lbl{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--accent);opacity:.8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.8rem;}
+.fc-q{font-size:1.15rem;font-weight:600;color:white;line-height:1.45;}
+.fc-a{font-size:.9rem;color:#c0d8f8;line-height:1.7;}
+.fc-hint-text{font-size:.75rem;color:var(--muted);margin-top:.8rem;font-family:'Space Mono',monospace;}
+.fc-nav{display:flex;gap:.8rem;justify-content:center;align-items:center;margin-top:.5rem;}
+.fc-nav-btn{
+  background:var(--card2);border:1px solid var(--border);border-radius:7px;
+  padding:.55rem 1.3rem;cursor:pointer;font-family:'Space Mono',monospace;
+  font-size:.82rem;color:var(--muted);transition:all .18s;
+}
+.fc-nav-btn:hover{border-color:var(--accent);color:var(--accent);}
+.fc-count{font-family:'Space Mono',monospace;font-size:.82rem;color:var(--muted);}
+
+/* MATCHING */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;}
+.match-col-title{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;}
+.match-col{display:flex;flex-direction:column;gap:.5rem;}
+.m-item{
+  padding:.7rem .9rem;border-radius:8px;border:1px solid var(--border);
+  background:var(--card2);cursor:pointer;font-size:.85rem;font-weight:500;
+  transition:all .18s;user-select:none;min-height:48px;display:flex;align-items:center;
+}
+.m-item:hover:not(.matched){border-color:var(--accent);background:rgba(79,156,249,.08);}
+.m-item.selected{border-color:var(--accent);background:rgba(79,156,249,.12);}
+.m-item.matched{border-color:var(--accent3);background:rgba(79,249,184,.08);cursor:default;color:var(--accent3);}
+.m-item.wrong-flash{border-color:var(--danger);background:rgba(249,79,106,.1);animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.match-score{text-align:center;font-family:'Space Mono',monospace;font-size:.9rem;color:var(--accent3);margin:1rem 0 .5rem;}
+.match-reset-btn{
+  display:block;margin:.4rem auto 0;background:transparent;border:1px solid var(--accent2);
+  border-radius:7px;color:var(--accent2);padding:.5rem 1.3rem;cursor:pointer;
+  font-family:'Outfit',sans-serif;font-weight:600;font-size:.85rem;transition:all .2s;
+}
+.match-reset-btn:hover{background:rgba(249,168,79,.1);}
+
+/* CALCULATOR */
+.calc-wrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-top:1rem;}
+.calc-field label{display:block;font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.08em;}
+.calc-field input{
+  width:100%;background:var(--card2);border:1px solid var(--border);border-radius:8px;
+  padding:.7rem 1rem;font-family:'Space Mono',monospace;font-size:1rem;color:var(--text);
+  outline:none;transition:border-color .2s;
+}
+.calc-field input:focus{border-color:var(--accent);}
+.calc-field input.result-field{border-color:var(--accent3);color:var(--accent3);background:rgba(79,249,184,.06);}
+.calc-buttons{grid-column:1/-1;display:flex;gap:.7rem;flex-wrap:wrap;}
+.calc-btn{
+  background:linear-gradient(135deg,var(--accent),#3a7fd4);color:white;
+  border:none;border-radius:8px;padding:.65rem 1.4rem;
+  font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:600;
+  cursor:pointer;transition:all .2s;
+}
+.calc-btn:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(79,156,249,.3);}
+.calc-btn.secondary{background:transparent;border:1px solid var(--border);color:var(--muted);}
+.calc-btn.secondary:hover{border-color:var(--accent);color:var(--accent);box-shadow:none;}
+.calc-result{
+  grid-column:1/-1;padding:1rem;background:rgba(79,249,184,.07);
+  border:1px solid var(--accent3);border-radius:8px;
+  font-family:'Space Mono',monospace;font-size:.9rem;color:var(--accent3);
+  display:none;
+}
+.calc-result.show{display:block;}
+.uri-triangle {
+  display:flex;justify-content:center;margin:1rem 0;
+}
+.uri-svg { width:220px; height:120px; }
+
+/* TIPS */
+.tip-card{
+  background:linear-gradient(135deg,rgba(79,156,249,.12) 0%,rgba(79,249,184,.08) 100%);
+  border:1px solid rgba(79,156,249,.25);border-radius:12px;
+  padding:1.4rem;margin-bottom:1rem;
+}
+.tip-card h4{font-weight:700;margin-bottom:.5rem;color:var(--accent);}
+.tip-card p{font-size:.86rem;color:#b0b8d8;line-height:1.6;}
+
+@media(max-width:600px){
+  .info-grid{grid-template-columns:1fr;}
+  .match-grid{grid-template-columns:1fr;}
+  .calc-wrap{grid-template-columns:1fr;}
+  .calc-buttons{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-tag">⚡ Physik 9/10</div>
+    <h1>Der elektrische Stromkreis</h1>
+    <p>Interaktive Lernumgebung zur Arbeitsvorbereitung &nbsp;·&nbsp; Größen · Schaltungen · Ohmsches Gesetz · Sicherheit</p>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-inner">
+    <button class="nav-btn active" onclick="showSection('lernen',this)">📖 Lerninhalte</button>
+    <button class="nav-btn" onclick="showSection('checkliste',this)">✅ Checkliste</button>
+    <button class="nav-btn" onclick="showSection('rechner',this)">🧮 Rechner</button>
+    <button class="nav-btn" onclick="showSection('quiz',this)">🧠 Quiz</button>
+    <button class="nav-btn" onclick="showSection('karteikarten',this)">🃏 Karteikarten</button>
+    <button class="nav-btn" onclick="showSection('zuordnung',this)">🔗 Zuordnung</button>
+    <button class="nav-btn" onclick="showSection('sicherheit',this)">⚠️ Sicherheit</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ===== LERNINHALTE ===== -->
+<div class="section active" id="lernen">
+  <div class="section-header">
+    <h2>Lerninhalte</h2>
+    <p>Alles Wichtige für die Arbeit – kompakt und mit Modellen erklärt</p>
+  </div>
+
+  <!-- Elektrische Größen -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📊</span> Die drei elektrischen Größen</div>
+    <table class="phy-table">
+      <thead><tr><th>Größe</th><th>Formelzeichen</th><th>Einheit (Abk.)</th><th>Messgerät</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Spannung</strong></td><td class="mono">U</td><td class="mono">Volt (V)</td><td>Voltmeter</td></tr>
+        <tr><td><strong>Stromstärke</strong></td><td class="mono">I</td><td class="mono">Ampere (A)</td><td>Amperemeter</td></tr>
+        <tr><td><strong>Widerstand</strong></td><td class="mono">R</td><td class="mono">Ohm (Ω)</td><td>–</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:.9rem;padding:.8rem 1rem;background:rgba(249,222,79,.07);border-left:3px solid var(--highlight);border-radius:6px;font-size:.83rem;color:#d0c080;">
+      💡 <strong>Einheiten umrechnen (E-Kurs):</strong> 1 kΩ = 1000 Ω &nbsp;|&nbsp; 1 mA = 0,001 A &nbsp;|&nbsp; 1 kV = 1000 V
+    </div>
+  </div>
+
+  <!-- Modelle -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🚗</span> Modelle zur Erklärung – Wassermodell & Autobahnmodell</div>
+    <div class="info-grid">
+      <div class="info-box blue">
+        <h4>⚡ Stromstärke I</h4>
+        <p><strong>Wassermodell:</strong> Wie viel Wasser pro Sekunde durch ein Rohr fließt → Stromstärke = Menge der Ladungsträger (Elektronen), die pro Sekunde durch einen Querschnitt fließen.</p>
+        <p style="margin-top:.5rem"><strong>Autobahnmodell:</strong> Anzahl der Autos, die pro Minute an einem Punkt vorbeifahren.</p>
+        <p style="margin-top:.5rem;font-family:'Space Mono',monospace;color:var(--accent);font-size:.82rem;">Einheit: Ampere (A)</p>
+      </div>
+      <div class="info-box green">
+        <h4>🔋 Spannung U <span class="cl-badge ekurs">E-Kurs</span></h4>
+        <p><strong>Wassermodell:</strong> Der Höhenunterschied zwischen zwei Wasserbehältern – er „treibt" das Wasser an. Die Spannung ist der „Antrieb" für den Strom.</p>
+        <p style="margin-top:.5rem"><strong>Autobahnmodell:</strong> Der Wunsch, schnell nach Hause zu kommen – je stärker der Antrieb, desto schneller fahren die Autos. Mehr Spannung = mehr „Druck" = mehr Strom.</p>
+        <p style="margin-top:.5rem;font-family:'Space Mono',monospace;color:var(--accent3);font-size:.82rem;">Einheit: Volt (V)</p>
+      </div>
+      <div class="info-box orange">
+        <h4>🚧 Widerstand R <span class="cl-badge ekurs">E-Kurs</span></h4>
+        <p><strong>Wassermodell:</strong> Eine Engstelle im Rohr, die den Wasserfluss bremst. Je enger, desto mehr Widerstand.</p>
+        <p style="margin-top:.5rem"><strong>Autobahnmodell:</strong> Eine Baustelle oder Engstelle auf der Autobahn – bremst den Verkehrsfluss.</p>
+        <p style="margin-top:.5rem;font-family:'Space Mono',monospace;color:var(--accent2);font-size:.82rem;">Einheit: Ohm (Ω)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ohmsches Gesetz -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔺</span> Das Ohmsche Gesetz – URI-Dreieck</div>
+    <div class="uri-triangle">
+      <svg class="uri-svg" viewBox="0 0 220 120" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="110,10 210,110 10,110" fill="none" stroke="#4f9cf9" stroke-width="2" stroke-linejoin="round"/>
+        <line x1="110" y1="10" x2="110" y2="110" stroke="#4f9cf9" stroke-width="1.5" stroke-dasharray="4,3" opacity=".5"/>
+        <rect x="70" y="12" width="80" height="35" rx="6" fill="#1e2333" stroke="#4f9cf9" stroke-width="1.5"/>
+        <text x="110" y="35" text-anchor="middle" fill="#4f9cf9" font-family="Space Mono,monospace" font-size="18" font-weight="700">U</text>
+        <rect x="12" y="72" width="80" height="35" rx="6" fill="#1e2333" stroke="#f9a84f" stroke-width="1.5"/>
+        <text x="52" y="95" text-anchor="middle" fill="#f9a84f" font-family="Space Mono,monospace" font-size="18" font-weight="700">R</text>
+        <rect x="128" y="72" width="80" height="35" rx="6" fill="#1e2333" stroke="#4ff9b8" stroke-width="1.5"/>
+        <text x="168" y="95" text-anchor="middle" fill="#4ff9b8" font-family="Space Mono,monospace" font-size="18" font-weight="700">I</text>
+      </svg>
+    </div>
+    <div class="info-grid">
+      <div class="info-box blue">
+        <h4>Spannung berechnen</h4>
+        <div style="font-family:'Space Mono',monospace;font-size:1.1rem;color:var(--accent);margin:.4rem 0;">U = I · R</div>
+        <p>Decke U ab → I · R</p>
+      </div>
+      <div class="info-box green">
+        <h4>Stromstärke berechnen</h4>
+        <div style="font-family:'Space Mono',monospace;font-size:1.1rem;color:var(--accent3);margin:.4rem 0;">I = U / R</div>
+        <p>Decke I ab → U ÷ R</p>
+      </div>
+      <div class="info-box orange">
+        <h4>Widerstand berechnen</h4>
+        <div style="font-family:'Space Mono',monospace;font-size:1.1rem;color:var(--accent2);margin:.4rem 0;">R = U / I</div>
+        <p>Decke R ab → U ÷ I</p>
+      </div>
+    </div>
+    <div style="margin-top:.9rem;">
+      <p style="font-size:.84rem;color:var(--muted);margin-bottom:.6rem;font-family:'Space Mono',monospace;">BEISPIELRECHNUNG</p>
+      <div class="accordion"><button class="acc-header" onclick="toggleAcc(this)">Beispiel a): U = 3V, I = 0,2A → R = ? <span class="acc-chevron">▼</span></button><div class="acc-body">R = U ÷ I = 3V ÷ 0,2A = <strong style="color:var(--accent3)">15 Ω</strong></div></div>
+      <div class="accordion"><button class="acc-header" onclick="toggleAcc(this)">Beispiel b): U = 9V, R = 200Ω → I = ? <span class="acc-chevron">▼</span></button><div class="acc-body">I = U ÷ R = 9V ÷ 200Ω = <strong style="color:var(--accent3)">0,045 A</strong></div></div>
+      <div class="accordion"><button class="acc-header" onclick="toggleAcc(this)">Beispiel c): I = 3A, R = 50Ω → U = ? <span class="acc-chevron">▼</span></button><div class="acc-body">U = I · R = 3A · 50Ω = <strong style="color:var(--accent3)">150 V</strong></div></div>
+      <div class="accordion"><button class="acc-header" onclick="toggleAcc(this)">E-Kurs: d) U = 6V, I = 300mA → R = ? (Umrechnung!) <span class="acc-chevron">▼</span></button><div class="acc-body">Zuerst umrechnen: 300 mA = 0,3 A<br>R = U ÷ I = 6V ÷ 0,3A = <strong style="color:var(--accent3)">20 Ω</strong></div></div>
+      <div class="accordion"><button class="acc-header" onclick="toggleAcc(this)">E-Kurs: e) U = 12V, R = 0,3kΩ → I = ? (Umrechnung!) <span class="acc-chevron">▼</span></button><div class="acc-body">Zuerst umrechnen: 0,3 kΩ = 300 Ω<br>I = U ÷ R = 12V ÷ 300Ω = <strong style="color:var(--accent3)">0,04 A</strong></div></div>
+    </div>
+  </div>
+
+  <!-- Schaltungen -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔌</span> Reihenschaltung vs. Parallelschaltung</div>
+    <div class="info-grid">
+      <div class="info-box blue">
+        <h4>🔗 Reihenschaltung</h4>
+        <ul>
+          <li><strong>Strom:</strong> überall gleich → I₁ = I₂ = I</li>
+          <li><strong>Spannung:</strong> teilt sich auf → U = U₁ + U₂</li>
+          <li><strong>Amperemeter:</strong> in Reihe schalten (unterbricht Leitung)</li>
+          <li><strong>Voltmeter:</strong> parallel zur Lampe schalten</li>
+          <li>Fällt eine Lampe aus → alles aus!</li>
+        </ul>
+      </div>
+      <div class="info-box green">
+        <h4>⚡ Parallelschaltung</h4>
+        <ul>
+          <li><strong>Spannung:</strong> überall gleich → U₁ = U₂ = U</li>
+          <li><strong>Strom:</strong> teilt sich auf → I = I₁ + I₂</li>
+          <li><strong>Voltmeter:</strong> parallel (an jedem Zweig gleiche Spannung)</li>
+          <li><strong>Amperemeter:</strong> in jeden Zweig separat</li>
+          <li>Fällt eine Lampe aus → andere brennt weiter!</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:1rem;">
+      <div class="accordion"><button class="acc-header" onclick="toggleAcc(this)">Aufgabe 5d): 640 mA gesamt, 2 gleiche Lampen → Strom pro Lampe? <span class="acc-chevron">▼</span></button>
+        <div class="acc-body">Bei Parallelschaltung gleicher Lampen teilt sich der Strom gleich auf:<br>I_Lampe = I_gesamt ÷ 2 = 640 mA ÷ 2 = <strong style="color:var(--accent3)">320 mA</strong> pro Lampe.<br><br>Probe: 320 mA + 320 mA = 640 mA ✓</div>
+      </div>
+      <div class="accordion"><button class="acc-header" onclick="toggleAcc(this)">Schaltplan-Symbole: Was bedeutet was? <span class="acc-chevron">▼</span></button>
+        <div class="acc-body">
+          <table class="phy-table">
+            <tr><th>Bauteil</th><th>Symbol im Schaltplan</th><th>Schaltung</th></tr>
+            <tr><td>Amperemeter (A)</td><td class="mono">—(A)—</td><td>In Reihe (unterbricht den Kreis)</td></tr>
+            <tr><td>Voltmeter (V)</td><td class="mono">—(V)—</td><td>Parallel (überbrückt das Bauteil)</td></tr>
+            <tr><td>Batterie</td><td class="mono">—|+—</td><td>Spannungsquelle</td></tr>
+            <tr><td>Glühlampe</td><td class="mono">—⊗—</td><td>Verbraucher</td></tr>
+            <tr><td>Schalter</td><td class="mono">—/—</td><td>Unterbricht Stromkreis</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CHECKLISTE ===== -->
+<div class="section" id="checkliste">
+  <div class="section-header">
+    <h2>Interaktive Checkliste</h2>
+    <p>Klicke auf jeden Punkt, um ihn zu bewerten – und sieh die Erklärung dazu!</p>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Wie gut kennst du die Inhalte?</div>
+    <div class="cl-status-bar">
+      <span style="font-size:.82rem;color:var(--muted);">Status setzen:</span>
+      <span style="font-size:.78rem;color:var(--accent3);">● Das kann ich</span>
+      <span style="font-size:.78rem;color:var(--accent2);">● Sollte ich üben</span>
+      <span style="font-size:.78rem;color:var(--danger);">● Muss ich üben</span>
+      <span style="font-size:.78rem;color:var(--muted);">(Klick auf den Punkt zum Durchschalten)</span>
+    </div>
+    <div id="cl-progress" style="margin-bottom:1rem;font-family:'Space Mono',monospace;font-size:.8rem;color:var(--muted);"></div>
+    <div id="cl-items"></div>
+  </div>
+</div>
+
+<!-- ===== RECHNER ===== -->
+<div class="section" id="rechner">
+  <div class="section-header">
+    <h2>Ohmscher Rechner</h2>
+    <p>Gib zwei Werte ein – der dritte wird automatisch berechnet. Inkl. Einheitenumrechnung!</p>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="icon">🧮</span> URI-Rechner</div>
+    <div class="calc-wrap">
+      <div class="calc-field">
+        <label>Spannung U</label>
+        <input type="number" id="c-u" placeholder="z.B. 12" oninput="calcOhm()">
+        <select id="c-u-unit" onchange="calcOhm()" style="width:100%;margin-top:.4rem;background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:.5rem;color:var(--muted);font-family:'Space Mono',monospace;font-size:.8rem;">
+          <option value="1">V (Volt)</option>
+          <option value="1000">kV (Kilovolt)</option>
+          <option value="0.001">mV (Millivolt)</option>
+        </select>
+      </div>
+      <div class="calc-field">
+        <label>Stromstärke I</label>
+        <input type="number" id="c-i" placeholder="z.B. 0.3" oninput="calcOhm()">
+        <select id="c-i-unit" onchange="calcOhm()" style="width:100%;margin-top:.4rem;background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:.5rem;color:var(--muted);font-family:'Space Mono',monospace;font-size:.8rem;">
+          <option value="1">A (Ampere)</option>
+          <option value="0.001">mA (Milliampere)</option>
+        </select>
+      </div>
+      <div class="calc-field">
+        <label>Widerstand R</label>
+        <input type="number" id="c-r" placeholder="z.B. 200" oninput="calcOhm()">
+        <select id="c-r-unit" onchange="calcOhm()" style="width:100%;margin-top:.4rem;background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:.5rem;color:var(--muted);font-family:'Space Mono',monospace;font-size:.8rem;">
+          <option value="1">Ω (Ohm)</option>
+          <option value="1000">kΩ (Kilohm)</option>
+        </select>
+      </div>
+      <div class="calc-buttons">
+        <button class="calc-btn secondary" onclick="clearCalc()">⟳ Zurücksetzen</button>
+      </div>
+      <div class="calc-result" id="calc-result"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="icon">📝</span> Aufgaben aus dem Übungsblatt nachrechnen</div>
+    <p style="font-size:.84rem;color:var(--muted);margin-bottom:1rem;">Klicke auf eine Aufgabe, um die Lösung schrittweise zu sehen:</p>
+    <div class="accordion"><button class="acc-header" onclick="toggleAcc(this)">a) U = 3V, I = 0,2A → R = ? <span class="acc-chevron">▼</span></button><div class="acc-body">Formel: R = U ÷ I<br>R = 3V ÷ 0,2A = <strong style="color:var(--accent3)">15 Ω</strong></div></div>
+    <div class="accordion"><button class="acc-header" onclick="toggleAcc(this)">b) U = 9V, R = 200Ω → I = ? <span class="acc-chevron">▼</span></button><div class="acc-body">Formel: I = U ÷ R<br>I = 9V ÷ 200Ω = <strong style="color:var(--accent3)">0,045 A = 45 mA</strong></div></div>
+    <div class="accordion"><button class="acc-header" onclick="toggleAcc(this)">c) I = 3A, R = 50Ω → U = ? <span class="acc-chevron">▼</span></button><div class="acc-body">Formel: U = I · R<br>U = 3A · 50Ω = <strong style="color:var(--accent3)">150 V</strong></div></div>
+    <div class="accordion"><button class="acc-header" onclick="toggleAcc(this)">d) U = 6V, I = 300mA → R = ? (E-Kurs) <span class="acc-chevron">▼</span></button><div class="acc-body">1. Umrechnen: 300 mA = 0,3 A<br>2. Formel: R = U ÷ I = 6V ÷ 0,3A = <strong style="color:var(--accent3)">20 Ω</strong></div></div>
+    <div class="accordion"><button class="acc-header" onclick="toggleAcc(this)">e) U = 12V, R = 0,3kΩ → I = ? (E-Kurs) <span class="acc-chevron">▼</span></button><div class="acc-body">1. Umrechnen: 0,3 kΩ = 300 Ω<br>2. Formel: I = U ÷ R = 12V ÷ 300Ω = <strong style="color:var(--accent3)">0,04 A = 40 mA</strong></div></div>
+    <div class="accordion"><button class="acc-header" onclick="toggleAcc(this)">f) I = 4500mA, R = 33Ω → U = ? (E-Kurs) <span class="acc-chevron">▼</span></button><div class="acc-body">1. Umrechnen: 4500 mA = 4,5 A<br>2. Formel: U = I · R = 4,5A · 33Ω = <strong style="color:var(--accent3)">148,5 V</strong></div></div>
+  </div>
+</div>
+
+<!-- ===== QUIZ ===== -->
+<div class="section" id="quiz">
+  <div class="section-header">
+    <h2>Quiz</h2>
+    <p>Varianten der Übungsaufgaben – teste dein Wissen!</p>
+  </div>
+  <div id="quiz-container">
+    <div class="card" style="text-align:center;padding:3rem;">
+      <div style="font-size:3rem;margin-bottom:1rem;">⚡</div>
+      <h3 style="font-size:1.5rem;font-weight:800;margin-bottom:.5rem;background:linear-gradient(90deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Bereit?</h3>
+      <p style="color:var(--muted);margin-bottom:1.5rem;">20 Fragen zu allen Themen der Arbeit</p>
+      <button onclick="startQuiz()" style="background:linear-gradient(135deg,var(--accent),var(--accent3));color:#0a1a2e;border:none;border-radius:10px;padding:1rem 2.5rem;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;">Quiz starten →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== KARTEIKARTEN ===== -->
+<div class="section" id="karteikarten">
+  <div class="section-header">
+    <h2>Karteikarten</h2>
+    <p>Klicke auf die Karte zum Umdrehen – Antwort auf der Rückseite</p>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="icon">🃏</span> Thema wählen</div>
+    <div class="fc-deck-sel">
+      <button class="fc-deck-btn active" onclick="setDeck('all',this)">Alle (22)</button>
+      <button class="fc-deck-btn" onclick="setDeck('groessen',this)">📊 Größen (6)</button>
+      <button class="fc-deck-btn" onclick="setDeck('ohm',this)">🔺 Ohmsches Gesetz (5)</button>
+      <button class="fc-deck-btn" onclick="setDeck('schaltungen',this)">🔌 Schaltungen (6)</button>
+      <button class="fc-deck-btn" onclick="setDeck('sicherheit',this)">⚠️ Sicherheit (5)</button>
+    </div>
+    <div class="fc-hint">👆 Klicken zum Umdrehen</div>
+    <div class="fc-wrap" onclick="flipCard()">
+      <div class="fc-card" id="fc-card">
+        <div class="fc-front">
+          <div class="fc-topic-lbl" id="fc-lbl"></div>
+          <div class="fc-q" id="fc-q"></div>
+        </div>
+        <div class="fc-back">
+          <div class="fc-a" id="fc-a"></div>
+          <div class="fc-hint-text" id="fc-h"></div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-nav">
+      <button class="fc-nav-btn" onclick="fcPrev()">← Zurück</button>
+      <span class="fc-count" id="fc-count">1 / 1</span>
+      <button class="fc-nav-btn" onclick="fcNext()">Weiter →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ZUORDNUNG ===== -->
+<div class="section" id="zuordnung">
+  <div class="section-header">
+    <h2>Zuordnungs-Spiel</h2>
+    <p>Klicke links einen Begriff an, dann rechts die passende Erklärung</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Größe ↔ Einheit & Zeichen</div>
+    <p style="font-size:.83rem;color:var(--muted);margin-bottom:1rem;">Ordne jeder elektrischen Größe das richtige Formelzeichen und die Einheit zu.</p>
+    <div class="match-grid">
+      <div class="match-col">
+        <div class="match-col-title">Elektrische Größe</div>
+        <div id="m1l0" class="m-item" onclick="mSel('m1','l',0)">Spannung</div>
+        <div id="m1l1" class="m-item" onclick="mSel('m1','l',1)">Stromstärke</div>
+        <div id="m1l2" class="m-item" onclick="mSel('m1','l',2)">Widerstand</div>
+        <div id="m1l3" class="m-item" onclick="mSel('m1','l',3)">Leistung (Vertiefung)</div>
+      </div>
+      <div class="match-col" id="m1-right">
+        <div class="match-col-title">Formelzeichen / Einheit</div>
+      </div>
+    </div>
+    <div class="match-score" id="m1-score"></div>
+    <button class="match-reset-btn" onclick="buildMatch1()">🔄 Neu mischen</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span> Schaltungsregel ↔ Reihen- oder Parallelschaltung</div>
+    <p style="font-size:.83rem;color:var(--muted);margin-bottom:1rem;">Welche Regel gilt für welche Schaltung?</p>
+    <div class="match-grid">
+      <div class="match-col">
+        <div class="match-col-title">Regel</div>
+        <div id="m2l0" class="m-item" onclick="mSel('m2','l',0)">Spannung teilt sich auf</div>
+        <div id="m2l1" class="m-item" onclick="mSel('m2','l',1)">Stromstärke teilt sich auf</div>
+        <div id="m2l2" class="m-item" onclick="mSel('m2','l',2)">Strom überall gleich</div>
+        <div id="m2l3" class="m-item" onclick="mSel('m2','l',3)">Spannung überall gleich</div>
+        <div id="m2l4" class="m-item" onclick="mSel('m2','l',4)">Amperemeter in Reihe</div>
+        <div id="m2l5" class="m-item" onclick="mSel('m2','l',5)">Voltmeter parallel</div>
+      </div>
+      <div class="match-col" id="m2-right">
+        <div class="match-col-title">Schaltungstyp</div>
+      </div>
+    </div>
+    <div class="match-score" id="m2-score"></div>
+    <button class="match-reset-btn" onclick="buildMatch2()">🔄 Neu mischen</button>
+  </div>
+</div>
+
+<!-- ===== SICHERHEIT ===== -->
+<div class="section" id="sicherheit">
+  <div class="section-header">
+    <h2>Sicherheit im Umgang mit Strom</h2>
+    <p>Wichtige Regeln für die Arbeit – auch als Prüfungsstoff!</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">⚠️</span> Gefahren &amp; Schutzregeln</div>
+    <div class="danger-rule"><div class="danger-icon">☠️</div><div>Netzspannung (220–230 V) kann <strong>tödlich</strong> sein – niemals unvorsichtig an Steckdosen oder Leitungen hantieren!</div></div>
+    <div class="danger-rule"><div class="danger-icon">💡</div><div>Beim Wechseln von Glühbirnen: <strong>Sicherung am Sicherungskasten ausschalten</strong> – nicht nur den Schalter betätigen!</div></div>
+    <div class="danger-rule"><div class="danger-icon">🔌</div><div>Bei Geräten mit Stecker: <strong>Stecker ziehen!</strong> Das Ausschalten mit dem Schalter allein ist nicht sicher, da Spannung anliegen kann.</div></div>
+    <div class="danger-rule"><div class="danger-icon">🪛</div><div><strong>Beschädigte Stromkabel</strong> niemals benutzen – sofort ersetzen oder reparieren lassen.</div></div>
+    <div class="danger-rule"><div class="danger-icon">💧</div><div><strong>Wasser und Elektrizität</strong> sind gefährlich: Keinen Föhn oder andere Elektrogeräte in der Nähe von Wasser (Badewanne, Waschbecken) benutzen.</div></div>
+    <div class="danger-rule"><div class="danger-icon">🤲</div><div>Beim Umgang mit Elektrogeräten immer <strong>trockene Hände</strong> haben – nasse Hände leiten Strom!</div></div>
+    <div class="danger-rule"><div class="danger-icon">🍞</div><div><strong>Nicht mit Metallgegenständen</strong> (z.B. Gabel) in den Toaster greifen – auch wenn er abgeschaltet ist, kann noch Spannung anliegen!</div></div>
+    <div class="danger-rule"><div class="danger-icon">🔧</div><div>Geräte <strong>nie öffnen, wenn sie unter Spannung stehen</strong>. Immer zuerst ausstecken und ggf. Spannungsprüfer benutzen.</div></div>
+    <div style="margin-top:.9rem;padding:.8rem 1rem;background:rgba(249,222,79,.07);border-left:3px solid var(--highlight);border-radius:6px;font-size:.83rem;color:#d0c080;">
+      📡 <strong>Elektrosmog:</strong> Elektrische und magnetische Felder vom Stromnetz können Schlaf beeinträchtigen. Im Schlafzimmer möglichst keine Geräte mit Trafo (Radiowecker, Ladegeräte) direkt am Kopfende aufstellen.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🚨</span> Erste Hilfe bei Stromunfall – Richtige Reihenfolge</div>
+    <p style="font-size:.84rem;color:var(--muted);margin-bottom:1rem;">Laut Unterrichtsmaterial (PHY-EDY-01GEFAHR): Was tust du, wenn du eine Person nach einem Stromunfall findest?</p>
+    <div style="counter-reset:steps;">
+      <div style="display:flex;gap:.8rem;align-items:flex-start;padding:.8rem 1rem;background:rgba(249,79,106,.07);border-left:3px solid var(--danger);border-radius:8px;margin-bottom:.5rem;font-size:.87rem;color:#e8b0b8;">
+        <strong style="color:var(--danger);font-family:'Space Mono',monospace;min-width:20px;">1.</strong>
+        <div><strong>Stromkreis unterbrechen</strong> – Sicherung ausschalten oder Stecker ziehen. Niemals die Person direkt berühren!</div>
+      </div>
+      <div style="display:flex;gap:.8rem;align-items:flex-start;padding:.8rem 1rem;background:rgba(249,168,79,.07);border-left:3px solid var(--accent2);border-radius:8px;margin-bottom:.5rem;font-size:.87rem;color:#e8c890;">
+        <strong style="color:var(--accent2);font-family:'Space Mono',monospace;min-width:20px;">2.</strong>
+        <div><strong>Person von Stromquelle trennen</strong> – mithilfe eines nicht-leitenden Gegenstands aus Holz oder Plastik (z.B. Besenstiel).</div>
+      </div>
+      <div style="display:flex;gap:.8rem;align-items:flex-start;padding:.8rem 1rem;background:rgba(249,168,79,.07);border-left:3px solid var(--accent2);border-radius:8px;margin-bottom:.5rem;font-size:.87rem;color:#e8c890;">
+        <strong style="color:var(--accent2);font-family:'Space Mono',monospace;min-width:20px;">3.</strong>
+        <div><strong>Notruf 112</strong> – Notarzt verständigen.</div>
+      </div>
+      <div style="display:flex;gap:.8rem;align-items:flex-start;padding:.8rem 1rem;background:rgba(79,249,184,.07);border-left:3px solid var(--accent3);border-radius:8px;margin-bottom:.5rem;font-size:.87rem;color:#90e0c0;">
+        <strong style="color:var(--accent3);font-family:'Space Mono',monospace;min-width:20px;">4.</strong>
+        <div><strong>Ein- und Austrittsstellen</strong> der Verletzung etwa 15 Minuten mit kaltem Wasser kühlen.</div>
+      </div>
+      <div style="display:flex;gap:.8rem;align-items:flex-start;padding:.8rem 1rem;background:rgba(79,249,184,.07);border-left:3px solid var(--accent3);border-radius:8px;margin-bottom:.5rem;font-size:.87rem;color:#90e0c0;">
+        <strong style="color:var(--accent3);font-family:'Space Mono',monospace;min-width:20px;">5a.</strong>
+        <div><strong>Bei Bewusstsein:</strong> Beine erhöht lagern.</div>
+      </div>
+      <div style="display:flex;gap:.8rem;align-items:flex-start;padding:.8rem 1rem;background:rgba(79,249,184,.07);border-left:3px solid var(--accent3);border-radius:8px;margin-bottom:.5rem;font-size:.87rem;color:#90e0c0;">
+        <strong style="color:var(--accent3);font-family:'Space Mono',monospace;min-width:20px;">5b.</strong>
+        <div><strong>Ohne Bewusstsein:</strong> Mund-zu-Mund-Beatmung und Herzdruckmassage beginnen.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">📖</span> Geschichte: Michelles Fehler – was ist falsch?</div>
+    <p style="font-size:.84rem;color:#b0b8d8;line-height:1.65;margin-bottom:1rem;font-style:italic;">
+      Michelle föhnt ihre Haare in der Badewanne, repariert ein loses Kabel mit Isolierband, überbrückt eine kaputte Lampe mit einem zweiten Kabel...
+    </p>
+    <div class="accordion"><button class="acc-header" onclick="toggleAcc(this)">Fehler 1: Föhn in der Badewanne benutzen <span class="acc-chevron">▼</span></button><div class="acc-body"><strong style="color:var(--danger);">⚠️ LEBENSGEFÄHRLICH!</strong> Wasser leitet Strom – fällt der Föhn ins Wasser, kann der Strom durch das Wasser fließen und die Person töten. Regel: Elektrogeräte niemals in Wassernähe benutzen.</div></div>
+    <div class="accordion"><button class="acc-header" onclick="toggleAcc(this)">Fehler 2: Loses Kabel mit Isolierband reparieren <span class="acc-chevron">▼</span></button><div class="acc-body"><strong style="color:var(--danger);">⚠️ GEFÄHRLICH!</strong> Isolierband ist keine dauerhafte oder sichere Reparaturmethode für Stromkabel. Beschädigte Kabel müssen von einer Fachkraft ersetzt werden. Nie selbst improvisieren!</div></div>
+    <div class="accordion"><button class="acc-header" onclick="toggleAcc(this)">Fehler 3: Kaputte Lampe mit zweitem Kabel überbrücken <span class="acc-chevron">▼</span></button><div class="acc-body"><strong style="color:var(--danger);">⚠️ GEFÄHRLICH!</strong> Das Überbrücken von Bauteilen kann Kurzschlüsse verursachen, was zu Feuer oder Stromschlägen führen kann. Defekte Bauteile müssen fachgerecht ersetzt werden.</div></div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ===== NAVIGATION =====
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (id === 'quiz') initQuiz();
+  if (id === 'karteikarten') initFC();
+  if (id === 'zuordnung') { buildMatch1(); buildMatch2(); }
+  if (id === 'checkliste') renderChecklist();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== ACCORDION =====
+function toggleAcc(btn) {
+  btn.classList.toggle('open');
+  btn.nextElementSibling.classList.toggle('open');
+}
+
+// ===== CALCULATOR =====
+function calcOhm() {
+  const uRaw = parseFloat(document.getElementById('c-u').value);
+  const iRaw = parseFloat(document.getElementById('c-i').value);
+  const rRaw = parseFloat(document.getElementById('c-r').value);
+  const uMul = parseFloat(document.getElementById('c-u-unit').value);
+  const iMul = parseFloat(document.getElementById('c-i-unit').value);
+  const rMul = parseFloat(document.getElementById('c-r-unit').value);
+  const res = document.getElementById('calc-result');
+  const uOk = !isNaN(uRaw), iOk = !isNaN(iRaw), rOk = !isNaN(rRaw);
+  if (uOk && iOk && !rOk) {
+    const u = uRaw * uMul, i = iRaw * iMul;
+    const r = u / i;
+    res.innerHTML = `R = U ÷ I = ${u} V ÷ ${i} A = <strong>${round(r)} Ω = ${round(r/1000)} kΩ</strong>`;
+    res.className = 'calc-result show';
+  } else if (uOk && rOk && !iOk) {
+    const u = uRaw * uMul, r = rRaw * rMul;
+    const i = u / r;
+    res.innerHTML = `I = U ÷ R = ${u} V ÷ ${r} Ω = <strong>${round(i)} A = ${round(i*1000)} mA</strong>`;
+    res.className = 'calc-result show';
+  } else if (iOk && rOk && !uOk) {
+    const i = iRaw * iMul, r = rRaw * rMul;
+    const u = i * r;
+    res.innerHTML = `U = I · R = ${i} A · ${r} Ω = <strong>${round(u)} V</strong>`;
+    res.className = 'calc-result show';
+  } else {
+    res.className = 'calc-result';
+  }
+}
+function round(v) { return Math.round(v * 10000) / 10000; }
+function clearCalc() {
+  ['c-u','c-i','c-r'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('calc-result').className = 'calc-result';
+}
+
+// ===== CHECKLIST =====
+const clItems = [
+  { num:1, text:'Die drei elektrischen Größen (Spannung, Stromstärke, Widerstand) benennen, Formelzeichen und Einheiten kennen.', ekurs:false,
+    exp:'Spannung U → Volt (V) | Stromstärke I → Ampere (A) | Widerstand R → Ohm (Ω). Merkhilfe: U-I-R wie "UIR" oder "URI". Alle drei brauchst du für das Ohmsche Gesetz!' },
+  { num:2, text:'Mit einem Modell die elektrische Stromstärke erklären (Wassermodell, Autobahnmodell).', ekurs:false,
+    exp:'Wassermodell: Stromstärke = Menge des Wassers, das pro Sekunde durch ein Rohr fließt. Autobahnmodell: Anzahl der Autos, die pro Minute an einem Punkt vorbeifahren. Einheit: Ampere (A).' },
+  { num:3, text:'Mit einem Modell die elektrische Spannung erklären (Wassermodell, Autobahnmodell).', ekurs:true,
+    exp:'Wassermodell: Spannung = Höhenunterschied zwischen zwei Behältern – er treibt das Wasser an. Autobahnmodell: Der Wunsch, schnell nach Hause zu kommen – je stärker der Antrieb, desto schneller fahren die Autos. Einheit: Volt (V).' },
+  { num:4, text:'Mit einem Modell den elektrischen Widerstand erklären (Wassermodell, Autobahnmodell).', ekurs:true,
+    exp:'Wassermodell: Eine Engstelle im Rohr – bremst den Fluss. Je enger, desto mehr Widerstand. Autobahnmodell: Baustelle / Engstelle auf der Autobahn. Einheit: Ohm (Ω).' },
+  { num:5, text:'Schaltpläne zu verschiedenen Schaltungen zeichnen (Reihen- und Parallelschaltung).', ekurs:false,
+    exp:'Reihenschaltung: Alle Bauteile nacheinander in einem Kreis. Parallelschaltung: Bauteile in parallelen Zweigen. Wichtige Symbole: Batterie (—|+—), Lampe (—⊗—), Schalter (—/—), Amperemeter (A im Kreis), Voltmeter (V im Kreis).' },
+  { num:6, text:'Erklären, wie mit einem Amperemeter die Stromstärke I gemessen wird und wie es im Schaltplan eingezeichnet wird.', ekurs:false,
+    exp:'Das Amperemeter wird IN REIHE geschaltet – es unterbricht den Stromkreis und der Strom muss komplett durch das Gerät fließen. Symbol: Kreis mit A. Es hat einen sehr kleinen Widerstand, damit es den Strom kaum beeinflusst.' },
+  { num:7, text:'Erläutern, wie sich die Stromstärke in elektrischen Schaltungen verhält.', ekurs:false,
+    exp:'Reihenschaltung: I ist überall gleich (I₁ = I₂ = I_gesamt). Parallelschaltung: I teilt sich auf (I_gesamt = I₁ + I₂). Bei gleichen Widerständen parallel: jeder Zweig bekommt die Hälfte.' },
+  { num:8, text:'Erklären, wie mit einem Voltmeter die Spannung U gemessen wird und wie es im Schaltplan eingezeichnet wird.', ekurs:false,
+    exp:'Das Voltmeter wird PARALLEL geschaltet – es wird an die Klemmen des Bauteils angeschlossen, ohne den Stromkreis zu unterbrechen. Symbol: Kreis mit V. Es hat einen sehr großen Widerstand.' },
+  { num:9, text:'Erläutern, wie sich die Spannung in elektrischen Schaltungen verhält.', ekurs:false,
+    exp:'Reihenschaltung: U teilt sich auf (U_gesamt = U₁ + U₂). Parallelschaltung: U ist überall gleich (U₁ = U₂ = U_gesamt). Merke: Bei einer 4,5V-Batterie in Parallelschaltung liegt an jeder Lampe 4,5V an.' },
+  { num:10, text:'Elektrische Größen umrechnen (z.B. mA in A, kΩ in Ω).', ekurs:true,
+    exp:'1 A = 1000 mA → zum Umrechnen von mA in A durch 1000 teilen. 300 mA = 0,3 A.\n1 kΩ = 1000 Ω → zum Umrechnen von kΩ in Ω mit 1000 multiplizieren. 0,3 kΩ = 300 Ω.\n1 kV = 1000 V (Hochspannung).' },
+  { num:11, text:'Das Ohmsche Gesetz zur Berechnung von fehlenden Größen nutzen (URI-Dreieck).', ekurs:false,
+    exp:'U = I · R | I = U ÷ R | R = U ÷ I. URI-Dreieck: Decke die gesuchte Größe ab – die anderen zeigen die Formel. Immer zuerst Einheiten prüfen und umrechnen! Dann einsetzen und ausrechnen.' }
+];
+const clState = new Array(clItems.length).fill(0); // 0=neutral, 1=done, 2=practice, 3=must
+
+function renderChecklist() {
+  const cont = document.getElementById('cl-items');
+  cont.innerHTML = '';
+  const stateClass = ['', 'done', 'practice', 'must-practice'];
+  const stateIcon = ['○', '✓', '~', '!'];
+  clItems.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = `checklist-item ${stateClass[clState[i]]}`;
+    div.id = `cl${i}`;
+    div.innerHTML = `
+      <div class="cl-toggle" onclick="cycleState(${i},event)">${stateIcon[clState[i]]}</div>
+      <div class="cl-content">
+        <div class="cl-number">Punkt ${item.num}${item.ekurs ? ' <span class="cl-badge ekurs">E-Kurs</span>' : ''}</div>
+        <div class="cl-text">${item.text}</div>
+        <div class="cl-explanation" id="clexp${i}">${item.exp.replace(/\n/g,'<br>')}</div>
+      </div>
+      <button onclick="toggleExp(${i},event)" style="background:none;border:1px solid var(--border);border-radius:6px;padding:.3rem .7rem;color:var(--muted);cursor:pointer;font-size:.75rem;flex-shrink:0;white-space:nowrap;font-family:'Outfit',sans-serif;" id="clbtn${i}">Erklärung</button>`;
+    cont.appendChild(div);
+  });
+  updateClProgress();
+}
+
+function cycleState(i, e) {
+  e.stopPropagation();
+  clState[i] = (clState[i] + 1) % 4;
+  renderChecklist();
+}
+
+function toggleExp(i, e) {
+  e.stopPropagation();
+  const exp = document.getElementById(`clexp${i}`);
+  const btn = document.getElementById(`clbtn${i}`);
+  exp.classList.toggle('show');
+  btn.textContent = exp.classList.contains('show') ? 'Verbergen' : 'Erklärung';
+}
+
+function updateClProgress() {
+  const done = clState.filter(s => s === 1).length;
+  const practice = clState.filter(s => s === 2).length;
+  const must = clState.filter(s => s === 3).length;
+  document.getElementById('cl-progress').innerHTML =
+    `✓ ${done} kann ich &nbsp;|&nbsp; ~ ${practice} sollte ich üben &nbsp;|&nbsp; ! ${must} muss ich üben`;
+}
+
+// ===== QUIZ =====
+const questions = [
+  { id:1, topic:'Elektrische Größen', type:'single',
+    question:'Welches Formelzeichen und welche Einheit hat die elektrische Spannung?',
+    options:['U, gemessen in Ampere (A)','I, gemessen in Volt (V)','U, gemessen in Volt (V)','R, gemessen in Ohm (Ω)'],
+    correct:2,
+    explanation:'Spannung = U, Einheit Volt (V). Stromstärke = I / Ampere (A). Widerstand = R / Ohm (Ω).' },
+  { id:2, topic:'Elektrische Größen', type:'multi',
+    question:'Welche der folgenden Aussagen über das Amperemeter sind korrekt?',
+    options:['Es wird in Reihe geschaltet.','Es wird parallel zum Bauteil geschaltet.','Es misst die Stromstärke I.','Es hat ein sehr kleinen Innenwiderstand.','Es misst die Spannung U.'],
+    correct:[0,2,3],
+    explanation:'Das Amperemeter wird in Reihe geschaltet (unterbricht den Kreis), misst die Stromstärke I und hat einen sehr kleinen Widerstand, um den Strom kaum zu beeinflussen.' },
+  { id:3, topic:'Elektrische Größen', type:'single',
+    question:'Welches Modell erklärt die elektrische Stromstärke am besten?',
+    options:[
+      'Der Höhenunterschied zwischen zwei Wasserbehältern.',
+      'Eine Engstelle im Wasserrohr, die den Fluss bremst.',
+      'Die Menge des Wassers, die pro Sekunde durch ein Rohr fließt.',
+      'Die Dicke des Wasserrohrs.'
+    ],
+    correct:2,
+    explanation:'Stromstärke = Menge der Ladungsträger pro Sekunde (wie Wasserfluss pro Sekunde). Der Höhenunterschied entspricht der Spannung, die Engstelle dem Widerstand.' },
+  { id:4, topic:'Elektrische Größen', type:'single',
+    question:'Was entspricht im Wassermodell der elektrischen Spannung? (E-Kurs)',
+    options:[
+      'Die Menge Wasser, die pro Sekunde fließt.',
+      'Die Engstelle im Rohr.',
+      'Der Höhenunterschied zwischen zwei Wasserbehältern.',
+      'Die Breite des Rohrs.'
+    ],
+    correct:2,
+    explanation:'Im Wassermodell entspricht die Spannung dem Höhenunterschied – er treibt das Wasser an. Mehr Höhenunterschied = mehr Druck = mehr Strom.' },
+  { id:5, topic:'Ohmsches Gesetz', type:'single',
+    question:'Eine Lampe hat einen Widerstand von 30 Ω. Es fließt ein Strom von 0,2 A. Welche Spannung liegt an?',
+    options:['6 V','150 V','0,006 V','3 V'],
+    correct:0,
+    explanation:'U = I · R = 0,2 A · 30 Ω = 6 V.' },
+  { id:6, topic:'Ohmsches Gesetz', type:'single',
+    question:'An einer Lampe liegt eine Spannung von 12 V an. Der Widerstand beträgt 400 Ω. Welche Stromstärke fließt?',
+    options:['4800 A','0,03 A','0,003 A','30 A'],
+    correct:1,
+    explanation:'I = U ÷ R = 12 V ÷ 400 Ω = 0,03 A.' },
+  { id:7, topic:'Ohmsches Gesetz', type:'single',
+    question:'Ein Strom von 500 mA fließt durch einen Widerstand, an dem 10 V anliegen. Wie groß ist der Widerstand? (E-Kurs – Einheit umrechnen!)',
+    options:['0,02 Ω','5000 Ω','20 Ω','200 Ω'],
+    correct:2,
+    explanation:'Erst umrechnen: 500 mA = 0,5 A. Dann R = U ÷ I = 10 V ÷ 0,5 A = 20 Ω.' },
+  { id:8, topic:'Ohmsches Gesetz', type:'single',
+    question:'Welche Formel liefert die Stromstärke I aus dem Ohmschen Gesetz?',
+    options:['I = U · R','I = R ÷ U','I = U ÷ R','I = U + R'],
+    correct:2,
+    explanation:'I = U ÷ R ist die korrekte Formel. Im URI-Dreieck: Decke I ab – es bleibt U über R.' },
+  { id:9, topic:'Ohmsches Gesetz', type:'single',
+    question:'U = 9 V, R = 0,3 kΩ – welche Stromstärke fließt? (E-Kurs)',
+    options:['30 A','0,03 A','300 mA','3 A'],
+    correct:1,
+    explanation:'0,3 kΩ = 300 Ω. I = 9 V ÷ 300 Ω = 0,03 A.' },
+  { id:10, topic:'Schaltungen', type:'multi',
+    question:'Was gilt bei einer Reihenschaltung zweier Lampen?',
+    options:[
+      'Die Stromstärke ist in beiden Lampen gleich.',
+      'Die Spannung teilt sich auf die Lampen auf.',
+      'Fällt eine Lampe aus, leuchtet die andere weiter.',
+      'Das Amperemeter wird in Reihe in den Stromkreis geschaltet.',
+      'Die Spannung ist an beiden Lampen gleich.'
+    ],
+    correct:[0,1,3],
+    explanation:'Reihenschaltung: Strom überall gleich, Spannung teilt sich auf, Amperemeter in Reihe. Fällt eine Lampe aus, erlischt alles (kein geschlossener Kreis mehr). Spannung überall gleich gilt bei der Parallelschaltung.' },
+  { id:11, topic:'Schaltungen', type:'multi',
+    question:'Was gilt bei einer Parallelschaltung zweier gleicher Lampen?',
+    options:[
+      'An jeder Lampe liegt die gleiche Spannung an.',
+      'Die Gesamtstromstärke teilt sich auf beide Zweige auf.',
+      'Fällt eine Lampe aus, geht alles aus.',
+      'Das Voltmeter wird parallel zur Spannungsquelle geschaltet.',
+      'Der Gesamtstrom ist kleiner als der Strom durch eine Lampe.'
+    ],
+    correct:[0,1,3],
+    explanation:'Parallelschaltung: Spannung überall gleich, Strom teilt sich auf, Voltmeter parallel. Fällt eine Lampe aus, brennt die andere weiter. Der Gesamtstrom ist die Summe der Teilströme – also größer.' },
+  { id:12, topic:'Schaltungen', type:'single',
+    question:'Eine Parallelschaltung mit Spannungsquelle 4,5 V und zwei gleichen Lampen. Welche Spannung liegt an jeder Lampe an?',
+    options:['2,25 V','9 V','4,5 V','0 V'],
+    correct:2,
+    explanation:'Bei der Parallelschaltung liegt an jedem Zweig die gleiche Spannung wie an der Quelle: 4,5 V.' },
+  { id:13, topic:'Schaltungen', type:'single',
+    question:'Der Gesamtstrom in einer Parallelschaltung beträgt 640 mA. Beide Lampen sind gleich. Wie groß ist der Strom durch jede Lampe?',
+    options:['640 mA','1280 mA','320 mA','160 mA'],
+    correct:2,
+    explanation:'Bei gleichen Lampen teilt sich der Strom gleichmäßig auf: 640 mA ÷ 2 = 320 mA pro Lampe.' },
+  { id:14, topic:'Schaltungen', type:'single',
+    question:'Wie wird ein Voltmeter korrekt in einen Schaltkreis eingebaut?',
+    options:[
+      'In Reihe mit dem zu messenden Bauteil.',
+      'Parallel zum zu messenden Bauteil.',
+      'An die Spannungsquelle direkt angeschlossen, nicht am Bauteil.',
+      'Spielt keine Rolle, wie es angeschlossen wird.'
+    ],
+    correct:1,
+    explanation:'Das Voltmeter wird parallel (überbrückend) an das Bauteil geschaltet, dessen Spannung gemessen werden soll. Es darf den Stromkreis nicht unterbrechen.' },
+  { id:15, topic:'Sicherheit', type:'multi',
+    question:'Welche Verhaltensweisen sind beim Umgang mit Elektrizität GEFÄHRLICH?',
+    options:[
+      'Föhn in der Badewanne benutzen.',
+      'Stecker ziehen vor Arbeiten an Geräten.',
+      'Beschädigte Kabel weiterbenutzen.',
+      'Mit einer Gabel Toast aus dem laufenden Toaster holen.',
+      'Sicherung ausschalten beim Glühbirnenwechsel.'
+    ],
+    correct:[0,2,3],
+    explanation:'Föhn im Wasser und Gabel im Toaster sind lebensgefährlich. Beschädigte Kabel dürfen nie benutzt werden. Stecker ziehen und Sicherung ausschalten sind RICHTIGE Sicherheitsmaßnahmen.' },
+  { id:16, topic:'Sicherheit', type:'single',
+    question:'Du wechselst eine Glühbirne. Was musst du zuerst tun?',
+    options:[
+      'Den Lichtschalter ausschalten – das reicht.',
+      'Den Stecker ziehen und fertig.',
+      'Die Sicherung am Sicherungskasten ausschalten.',
+      'Nichts Besonderes – Glühbirnen sind harmlos.'
+    ],
+    correct:2,
+    explanation:'Beim Glühbirnenwechsel die Sicherung am Sicherungskasten ausschalten! Nur den Schalter zu betätigen reicht nicht – es kann noch Spannung anliegen.' },
+  { id:17, topic:'Sicherheit', type:'single',
+    question:'Welche Spannungshöhe des Stromnetzes kann für Menschen tödlich sein?',
+    options:['9 V (Batterie)','12 V (Autobatterie)','220–230 V (Netzspannung)','Nur Spannungen über 10.000 V'],
+    correct:2,
+    explanation:'Bereits die Netzspannung von 220–230 V kann tödlich sein! Niedrige Spannungen (Batterien bis ~12V) sind in der Regel ungefährlich.' },
+  { id:18, topic:'Sicherheit', type:'single',
+    question:'Du findest eine bewusstlose Person, die einen Stromunfall hatte. Was tust du als ERSTES?',
+    options:[
+      'Sofort die Person anfassen und wegziehen.',
+      'Notarzt rufen (112).',
+      'Stromkreis unterbrechen (Sicherung ausschalten) und Person nicht berühren.',
+      'Mund-zu-Mund-Beatmung beginnen.'
+    ],
+    correct:2,
+    explanation:'Zuerst den Stromkreis unterbrechen (Sicherung/Stecker) und die Person NICHT berühren – Lebensgefahr für den Helfer! Erst danach Notruf und Erste Hilfe.' },
+  { id:19, topic:'Einheiten (E-Kurs)', type:'single',
+    question:'Wie viel Ampere sind 4500 mA?',
+    options:['450 A','4,5 A','0,45 A','45 A'],
+    correct:1,
+    explanation:'1 A = 1000 mA → 4500 mA ÷ 1000 = 4,5 A.' },
+  { id:20, topic:'Einheiten (E-Kurs)', type:'single',
+    question:'Ein Widerstand hat 2,2 kΩ. Wie viel Ohm sind das?',
+    options:['22 Ω','220 Ω','2200 Ω','22000 Ω'],
+    correct:2,
+    explanation:'1 kΩ = 1000 Ω → 2,2 kΩ × 1000 = 2200 Ω.' }
+];
+
+let qCurrent = 0, qScore = 0, qActive = false, qTopicScores = {}, qWrong = [], qAnswered = false, qMultiSel = [];
+
+function initQuiz() {
+  if (qActive) return;
+  document.getElementById('quiz-container').innerHTML = `
+    <div class="card" style="text-align:center;padding:3rem;">
+      <div style="font-size:3rem;margin-bottom:1rem;">⚡</div>
+      <h3 style="font-size:1.5rem;font-weight:800;margin-bottom:.5rem;background:linear-gradient(90deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Bereit?</h3>
+      <p style="color:var(--muted);margin-bottom:1.5rem;">20 Fragen zu allen Themen der Arbeit</p>
+      <button onclick="startQuiz()" style="background:linear-gradient(135deg,var(--accent),var(--accent3));color:#0a1a2e;border:none;border-radius:10px;padding:1rem 2.5rem;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;">Quiz starten →</button>
+    </div>`;
+}
+
+function startQuiz() {
+  qCurrent = 0; qScore = 0; qActive = true; qTopicScores = {}; qWrong = []; qAnswered = false; qMultiSel = [];
+  questions.forEach(q => { qTopicScores[q.topic] = { c:0, t:0 }; });
+  renderQ();
+}
+
+function renderQ() {
+  if (qCurrent >= questions.length) { showQResults(); return; }
+  const q = questions[qCurrent];
+  qAnswered = false; qMultiSel = [];
+  const pct = Math.round((qCurrent / questions.length) * 100);
+  let opts = '';
+  if (q.type === 'single') {
+    opts = '<div class="options">' + q.options.map((o,i) =>
+      `<button class="opt-btn" onclick="selSingle(${i})" id="qo${i}"><span class="opt-letter">${String.fromCharCode(65+i)}</span>${o}</button>`
+    ).join('') + '</div>';
+  } else {
+    opts = '<div class="options" id="multi-wrap">' + q.options.map((o,i) =>
+      `<div class="multi-opt" onclick="togMulti(${i})" id="qm${i}"><div class="m-check" id="qmc${i}"></div>${o}</div>`
+    ).join('') + `</div><button class="submit-btn" id="qsubmit" onclick="subMulti()">Antwort prüfen</button>`;
+  }
+  document.getElementById('quiz-container').innerHTML = `
+    <div class="quiz-progress">
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="progress-label">${qCurrent+1} / ${questions.length}</div>
+    </div>
+    <div class="card">
+      <div class="q-topic">${q.topic}</div>
+      <div class="q-num">${qCurrent+1}</div>
+      <div class="q-text">${q.question}${q.type==='multi'?' <span style="font-size:.78rem;color:var(--muted);">(Mehrfachauswahl)</span>':''}</div>
+      ${opts}
+      <div class="feedback" id="qfb"></div>
+      <button class="btn-next" id="qnext" onclick="nextQ()">${qCurrent+1<questions.length?'Nächste Frage →':'Ergebnis anzeigen ⚡'}</button>
+    </div>`;
+}
+
+function selSingle(idx) {
+  if (qAnswered) return;
+  qAnswered = true;
+  const q = questions[qCurrent];
+  qTopicScores[q.topic].t++;
+  const ok = idx === q.correct;
+  if (ok) { qScore++; qTopicScores[q.topic].c++; }
+  else qWrong.push({ q:q.question, y:q.options[idx], c:q.options[q.correct], e:q.explanation });
+  document.querySelectorAll('.opt-btn').forEach((b,i) => {
+    b.disabled = true;
+    if (i === q.correct) b.classList.add('correct');
+    else if (i === idx && !ok) b.classList.add('wrong');
+  });
+  const fb = document.getElementById('qfb');
+  fb.className = `feedback show ${ok?'ok':'err'}`;
+  fb.innerHTML = `<strong>${ok?'✅ Richtig!':'❌ Falsch.'}</strong> ${q.explanation}`;
+  document.getElementById('qnext').classList.add('show');
+}
+
+function togMulti(idx) {
+  if (qAnswered) return;
+  const el = document.getElementById(`qm${idx}`), chk = document.getElementById(`qmc${idx}`);
+  if (qMultiSel.includes(idx)) { qMultiSel = qMultiSel.filter(x=>x!==idx); el.classList.remove('selected'); chk.innerHTML=''; }
+  else { qMultiSel.push(idx); el.classList.add('selected'); chk.innerHTML='✓'; }
+}
+
+function subMulti() {
+  if (qAnswered) return;
+  qAnswered = true;
+  document.getElementById('qsubmit').disabled = true;
+  const q = questions[qCurrent];
+  qTopicScores[q.topic].t++;
+  const ok = q.correct.length===qMultiSel.length && q.correct.every(c=>qMultiSel.includes(c));
+  if (ok) { qScore++; qTopicScores[q.topic].c++; }
+  else qWrong.push({ q:q.question, y:qMultiSel.map(i=>q.options[i]).join(', ')||'(keine)', c:q.correct.map(i=>q.options[i]).join(', '), e:q.explanation });
+  q.options.forEach((_,i)=>{
+    const el = document.getElementById(`qm${i}`);
+    const isC=q.correct.includes(i), isSel=qMultiSel.includes(i);
+    if(isC&&isSel) el.className='multi-opt correct-selected locked';
+    else if(!isC&&isSel) el.className='multi-opt wrong-selected locked';
+    else if(isC&&!isSel) el.className='multi-opt missed-correct locked';
+    else el.className='multi-opt locked';
+  });
+  const fb = document.getElementById('qfb');
+  fb.className = `feedback show ${ok?'ok':'err'}`;
+  fb.innerHTML = `<strong>${ok?'✅ Alle richtigen Antworten!':'❌ Nicht ganz.'}</strong> ${q.explanation}`;
+  document.getElementById('qnext').classList.add('show');
+}
+
+function nextQ() { qCurrent++; renderQ(); }
+
+function showQResults() {
+  qActive = false;
+  const pct = Math.round((qScore/questions.length)*100);
+  const emoji = pct>=80?'⚡':pct>=60?'🔋':'🔌';
+  const msg = pct>=80?'Ausgezeichnet! Für die Arbeit gut gerüstet.':pct>=60?'Gut gemacht – einige Themen noch wiederholen.':'Mehr üben – schau dir die Lerninhalte nochmal an.';
+  const uniqueT = [...new Set(questions.map(q=>q.topic))];
+  const tRows = uniqueT.map(t=>{
+    const ts=qTopicScores[t]||{c:0,t:0};
+    if(!ts.t) return '';
+    const tp=Math.round((ts.c/ts.t)*100);
+    const col=tp>=80?'#4ff9b8':tp>=50?'#f9a84f':'#f94f6a';
+    return `<div class="topic-row"><div class="topic-name">${t}</div><div class="topic-bar-wrap"><div class="topic-bar-fill" style="width:${tp}%;background:${col}"></div></div><div class="topic-pct" style="color:${col}">${ts.c}/${ts.t}</div></div>`;
+  }).join('');
+  const weakT = uniqueT.filter(t=>{const ts=qTopicScores[t];return ts&&ts.t>0&&(ts.c/ts.t)<0.6;});
+  const weakHtml = weakT.length
+    ? `<div style="background:rgba(249,79,106,.1);border:1px solid var(--danger);border-radius:8px;padding:.9rem;margin-top:1rem;font-size:.85rem;color:#f0a0a8;"><strong>📌 Diese Themen noch üben:</strong><br>${weakT.map(t=>'• '+t).join('<br>')}</div>`
+    : `<div style="background:rgba(79,249,184,.08);border:1px solid var(--accent3);border-radius:8px;padding:.9rem;margin-top:1rem;font-size:.85rem;color:var(--accent3);">⚡ Alle Themen gut im Griff!</div>`;
+  const revHtml = qWrong.length?`<div style="margin-top:1.5rem;text-align:left;"><div style="font-family:'Space Mono',monospace;font-size:.75rem;color:var(--danger);margin-bottom:.8rem;text-transform:uppercase;letter-spacing:.1em;">Falsche Antworten:</div>${qWrong.map(w=>`<div class="review-item"><div class="review-q">${w.q}</div><div class="review-yours">Deine Antwort: ${w.y}</div><div class="review-right">✅ Richtig: ${w.c}</div><div class="review-exp">${w.e}</div></div>`).join('')}</div>`:'';
+  document.getElementById('quiz-container').innerHTML = `
+    <div class="card result-wrap">
+      <div class="score-circle">
+        <div class="score-bg" style="background:conic-gradient(#4ff9b8 ${pct}%,#2e3450 ${pct}%)"></div>
+        <div class="score-inner"><div class="score-num">${qScore}</div><div class="score-of">von ${questions.length}</div></div>
+      </div>
+      <div class="result-title">${emoji} ${pct}%</div>
+      <div class="result-sub">${msg}</div>
+      ${weakHtml}
+      <div style="margin-top:1.5rem;">${tRows}</div>
+      ${revHtml}
+      <div style="margin-top:2rem;">
+        <button class="btn-retry" onclick="startQuiz()">🔄 Wiederholen</button>
+        <button class="btn-back" onclick="showSection('lernen',document.querySelector('.nav-btn'))">📖 Lerninhalte</button>
+      </div>
+    </div>`;
+}
+
+// ===== FLASHCARDS =====
+const fcDecks = {
+  groessen: [
+    {t:'Elektrische Größen', q:'Was ist die Einheit der Spannung und ihr Formelzeichen?', a:'Formelzeichen: U\nEinheit: Volt (V)\nMessgerät: Voltmeter (parallel schalten)', h:'U wie "Ursache" – Spannung treibt den Strom an'},
+    {t:'Elektrische Größen', q:'Was ist die Einheit der Stromstärke und ihr Formelzeichen?', a:'Formelzeichen: I\nEinheit: Ampere (A)\nMessgerät: Amperemeter (in Reihe schalten)', h:'I wie "Intensity" des Stroms'},
+    {t:'Elektrische Größen', q:'Was ist die Einheit des Widerstands und ihr Formelzeichen?', a:'Formelzeichen: R\nEinheit: Ohm (Ω)\nKein eigenes Messgerät – wird berechnet', h:'R wie "Resistance" = Widerstand'},
+    {t:'Elektrische Größen', q:'Erkläre Stromstärke mit dem Wassermodell.', a:'Stromstärke = Menge des Wassers, die pro Sekunde durch ein Rohr fließt.\n\nMehr Strom = mehr Elektronen pro Sekunde durch einen Querschnitt.', h:'Wie viel fließt pro Sekunde?'},
+    {t:'Elektrische Größen (E)', q:'Erkläre Spannung mit dem Wassermodell.', a:'Spannung = Höhenunterschied zwischen zwei Wasserbehältern.\n\nEr ist der "Antrieb" – je mehr Höhenunterschied, desto mehr Druck und Strom.\n\nAutobahnmodell: Der Wunsch, schnell nach Hause zu kommen – je stärker der Antrieb, desto schneller fahren die Autos.', h:'Wie viel "Druck" steckt dahinter?'},
+    {t:'Elektrische Größen (E)', q:'Erkläre Widerstand mit dem Wassermodell.', a:'Widerstand = Engstelle im Wasserrohr.\n\nJe enger die Engstelle, desto mehr Widerstand, desto weniger Wasser fließt.', h:'Was bremst den Fluss?'}
+  ],
+  ohm: [
+    {t:'Ohmsches Gesetz', q:'Wie lautet das Ohmsche Gesetz? Nenne alle drei Umstellungen.', a:'U = I · R\nI = U ÷ R\nR = U ÷ I\n\nMerkhilfe: URI-Dreieck – decke die gesuchte Größe ab!', h:'3 Formeln aus einem Dreieck'},
+    {t:'Ohmsches Gesetz', q:'U = 6V, I = 300mA → R = ? (E-Kurs)', a:'1. Umrechnen: 300 mA = 0,3 A\n2. R = U ÷ I = 6V ÷ 0,3A = 20 Ω', h:'Immer zuerst Einheiten umrechnen!'},
+    {t:'Ohmsches Gesetz', q:'U = 12V, R = 0,3 kΩ → I = ? (E-Kurs)', a:'1. Umrechnen: 0,3 kΩ = 300 Ω\n2. I = U ÷ R = 12V ÷ 300Ω = 0,04 A', h:'kΩ → Ω: mal 1000'},
+    {t:'Ohmsches Gesetz', q:'I = 4500mA, R = 33Ω → U = ? (E-Kurs)', a:'1. Umrechnen: 4500 mA = 4,5 A\n2. U = I · R = 4,5A · 33Ω = 148,5 V', h:'mA → A: durch 1000'},
+    {t:'Ohmsches Gesetz', q:'Wie hilft das URI-Dreieck beim Rechnen?', a:'Schreibe U oben, I unten links, R unten rechts.\nDecke die gesuchte Größe ab:\n• U abgedeckt → I · R\n• I abgedeckt → U ÷ R\n• R abgedeckt → U ÷ I', h:'Ein Dreieck, drei Formeln'}
+  ],
+  schaltungen: [
+    {t:'Schaltungen', q:'Wie verhält sich die Stromstärke in der Reihenschaltung?', a:'Die Stromstärke ist überall im Kreis gleich:\nI₁ = I₂ = I_gesamt\n\nDas Amperemeter kann an beliebiger Stelle in Reihe geschaltet werden.', h:'Reihe: Strom gleich'},
+    {t:'Schaltungen', q:'Wie verhält sich die Spannung in der Reihenschaltung?', a:'Die Spannung teilt sich auf die Verbraucher auf:\nU_gesamt = U₁ + U₂\n\nBei gleichen Lampen: Jede bekommt die Hälfte der Gesamtspannung.', h:'Reihe: Spannung teilt sich'},
+    {t:'Schaltungen', q:'Wie verhält sich die Spannung in der Parallelschaltung?', a:'Die Spannung ist an jedem Zweig gleich:\nU₁ = U₂ = U_gesamt\n\nBei 4,5V Batterie: Jede Lampe bekommt 4,5V.', h:'Parallel: Spannung gleich'},
+    {t:'Schaltungen', q:'Wie verhält sich die Stromstärke in der Parallelschaltung?', a:'Die Stromstärke teilt sich auf:\nI_gesamt = I₁ + I₂\n\nBei gleichen Lampen: I₁ = I₂ = I_gesamt ÷ 2', h:'Parallel: Strom teilt sich'},
+    {t:'Schaltungen', q:'Wie wird das Amperemeter korrekt angeschlossen?', a:'IN REIHE schalten – es unterbricht den Stromkreis.\nDer gesamte Strom muss durch das Gerät fließen.\nKleiner Innenwiderstand (damit es den Strom kaum beeinflusst).', h:'Amperemeter: in Reihe'},
+    {t:'Schaltungen', q:'Wie wird das Voltmeter korrekt angeschlossen?', a:'PARALLEL zum Bauteil schalten – überbrückt es.\nDer Stromkreis wird NICHT unterbrochen.\nGroßer Innenwiderstand (damit kaum Strom abfließt).', h:'Voltmeter: parallel'}
+  ],
+  sicherheit: [
+    {t:'Sicherheit', q:'Warum darf man keinen Föhn in der Badewanne benutzen?', a:'Wasser leitet elektrischen Strom.\nFällt der Föhn ins Wasser, fließt der Strom durch das Wasser und kann die Person töten.\nNetzspannung 220-230V ist tödlich!', h:'Wasser + Strom = tödlich'},
+    {t:'Sicherheit', q:'Was muss man tun, bevor man eine Glühbirne wechselt?', a:'Die Sicherung am Sicherungskasten ausschalten!\nNicht nur den Schalter betätigen – es kann trotzdem noch Spannung anliegen.', h:'Sicherungskasten, nicht Schalter!'},
+    {t:'Sicherheit', q:'Was ist die richtige Reihenfolge bei einem Stromunfall?', a:'1. Stromkreis unterbrechen (Sicherung/Stecker)\n2. Person mit Holz/Plastik von Quelle trennen (nicht berühren!)\n3. Notruf 112\n4. Verletzungen kühlen (15 Min. kaltes Wasser)\n5. Erste Hilfe leisten', h:'Erst Strom weg, dann helfen!'},
+    {t:'Sicherheit', q:'Welche Spannung ist für Menschen bereits gefährlich/tödlich?', a:'Bereits ab ~50 V kann gefährlicher Strom durch den Körper fließen.\nNetzspannung 220-230 V ist tödlich.\nBatteriespannungen (bis ~12V) sind in der Regel ungefährlich.', h:'220-230V = Todesgefahr'},
+    {t:'Sicherheit', q:'Warum muss man Stecker ziehen (nicht nur Schalter aus)?', a:'Der Schalter unterbricht nur einen Leiter im Stromkreis.\nAn bestimmten Teilen des Geräts kann trotzdem noch Spannung anliegen.\nNur das Ziehen des Steckers trennt das Gerät vollständig vom Netz.', h:'Schalter = nicht sicher genug'}
+  ]
+};
+fcDecks.all = [...fcDecks.groessen, ...fcDecks.ohm, ...fcDecks.schaltungen, ...fcDecks.sicherheit];
+
+let fcDeck='all', fcIdx=0, fcCards=[];
+
+function initFC() {
+  fcDeck='all'; fcIdx=0; fcCards=[...fcDecks.all];
+  document.querySelectorAll('.fc-deck-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+  renderFC();
+}
+
+function setDeck(d, btn) {
+  fcDeck=d; fcIdx=0; fcCards=[...fcDecks[d]];
+  document.querySelectorAll('.fc-deck-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('fc-card').classList.remove('flipped');
+  renderFC();
+}
+
+function renderFC() {
+  if (!fcCards.length) return;
+  const c=fcCards[fcIdx];
+  document.getElementById('fc-lbl').textContent=c.t;
+  document.getElementById('fc-q').textContent=c.q;
+  document.getElementById('fc-a').innerHTML=c.a.replace(/\n/g,'<br>');
+  document.getElementById('fc-h').textContent=c.h?'💡 '+c.h:'';
+  document.getElementById('fc-count').textContent=`${fcIdx+1} / ${fcCards.length}`;
+  document.getElementById('fc-card').classList.remove('flipped');
+}
+function flipCard(){document.getElementById('fc-card').classList.toggle('flipped');}
+function fcNext(){fcIdx=(fcIdx+1)%fcCards.length;renderFC();}
+function fcPrev(){fcIdx=(fcIdx-1+fcCards.length)%fcCards.length;renderFC();}
+
+// ===== MATCHING =====
+const m1Pairs=[
+  {l:'Spannung',r:'U – gemessen in Volt (V)'},
+  {l:'Stromstärke',r:'I – gemessen in Ampere (A)'},
+  {l:'Widerstand',r:'R – gemessen in Ohm (Ω)'},
+  {l:'Leistung (Vertiefung)',r:'P – gemessen in Watt (W)'}
+];
+const m2Pairs=[
+  {l:'Spannung teilt sich auf',r:'Reihenschaltung'},
+  {l:'Stromstärke teilt sich auf',r:'Parallelschaltung'},
+  {l:'Strom überall gleich',r:'Reihenschaltung'},
+  {l:'Spannung überall gleich',r:'Parallelschaltung'},
+  {l:'Amperemeter in Reihe',r:'Gilt für beide Schaltungen'},
+  {l:'Voltmeter parallel',r:'Gilt für beide Schaltungen'}
+];
+
+function shuffle(a){return [...a].sort(()=>Math.random()-.5);}
+let mState={m1:{selL:null,matched:new Set(),score:0},m2:{selL:null,matched:new Set(),score:0}};
+
+function buildMatch1(){
+  mState.m1={selL:null,matched:new Set(),score:0};
+  document.getElementById('m1-score').textContent='';
+  const rights=shuffle(m1Pairs.map(p=>p.r));
+  m1Pairs.forEach((p,i)=>{const el=document.getElementById(`m1l${i}`);el.className='m-item';el.textContent=p.l;});
+  const col=document.getElementById('m1-right');
+  col.innerHTML='<div class="match-col-title">Formelzeichen / Einheit</div>';
+  rights.forEach((r,i)=>{
+    const d=document.createElement('div');
+    d.className='m-item';d.id=`m1r${i}`;d.textContent=r;
+    d.onclick=()=>mSel('m1','r',i);col.appendChild(d);
+  });
+}
+
+function buildMatch2(){
+  mState.m2={selL:null,matched:new Set(),score:0};
+  document.getElementById('m2-score').textContent='';
+  const rights=shuffle(m2Pairs.map(p=>p.r));
+  m2Pairs.forEach((p,i)=>{const el=document.getElementById(`m2l${i}`);el.className='m-item';el.textContent=p.l;});
+  const col=document.getElementById('m2-right');
+  col.innerHTML='<div class="match-col-title">Schaltungstyp</div>';
+  rights.forEach((r,i)=>{
+    const d=document.createElement('div');
+    d.className='m-item';d.id=`m2r${i}`;d.textContent=r;
+    d.onclick=()=>mSel('m2','r',i);col.appendChild(d);
+  });
+}
+
+function mSel(game, side, idx) {
+  const st=mState[game];
+  const lPre=game==='m1'?'m1l':'m2l', rPre=game==='m1'?'m1r':'m2r';
+  const pairs=game==='m1'?m1Pairs:m2Pairs;
+  const scoreEl=document.getElementById(`${game}-score`);
+  if (side==='l') {
+    if(st.matched.has('l'+idx)) return;
+    document.querySelectorAll(`[id^="${lPre}"]`).forEach(e=>e.classList.remove('selected'));
+    st.selL=idx;
+    document.getElementById(lPre+idx).classList.add('selected');
+  } else {
+    if(st.matched.has('r'+idx)||st.selL===null) return;
+    const lEl=document.getElementById(lPre+st.selL);
+    const rEl=document.getElementById(rPre+idx);
+    const lt=lEl.textContent.trim(), rt=rEl.textContent.trim();
+    const ok=pairs.some(p=>p.l===lt&&p.r===rt);
+    if(ok){
+      lEl.classList.remove('selected');lEl.classList.add('matched');
+      rEl.classList.add('matched');
+      st.matched.add('l'+st.selL);st.matched.add('r'+idx);
+      st.selL=null;st.score++;
+      scoreEl.textContent=st.score===pairs.length?`🎉 Alle ${pairs.length} Paare gefunden!`:`${st.score} / ${pairs.length} Paare richtig`;
+    } else {
+      lEl.classList.add('wrong-flash');rEl.classList.add('wrong-flash');
+      setTimeout(()=>{lEl.classList.remove('wrong-flash','selected');rEl.classList.remove('wrong-flash');st.selL=null;},600);
+    }
+  }
+}
+
+// Init on load
+buildMatch1();
+buildMatch2();
+renderChecklist();
+</script>
+</body>
+</html>
